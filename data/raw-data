@@ -1,0 +1,314 @@
+import pandas as pd
+import numpy as np
+import random
+from datetime import datetime, timedelta
+import json
+
+# Set random seed for reproducible results
+np.random.seed(42)
+random.seed(42)
+
+def generate_global_development_data():
+    """Generate comprehensive sample data for Global Development Intelligence Dashboard"""
+    
+    # Define regions and countries
+    regions_countries = {
+        'North America': ['United States', 'Canada', 'Mexico'],
+        'Europe': ['Germany', 'France', 'United Kingdom', 'Italy', 'Spain', 'Netherlands'],
+        'Asia Pacific': ['China', 'Japan', 'India', 'South Korea', 'Australia', 'Singapore'],
+        'Latin America': ['Brazil', 'Argentina', 'Chile', 'Colombia', 'Peru'],
+        'Africa': ['South Africa', 'Nigeria', 'Kenya', 'Egypt', 'Ghana'],
+        'Middle East': ['UAE', 'Saudi Arabia', 'Israel', 'Turkey', 'Qatar']
+    }
+    
+    # Flatten country list
+    all_countries = [country for countries in regions_countries.values() for country in countries]
+    
+    # Generate time series data (2019-2024)
+    years = list(range(2019, 2025))
+    quarters = ['Q1', 'Q2', 'Q3', 'Q4']
+    
+    # 1. ECONOMIC INDICATORS DATA
+    economic_data = []
+    for country in all_countries:
+        region = next(region for region, countries in regions_countries.items() if country in countries)
+        
+        # Base values vary by region development level
+        base_gdp = {
+            'North America': np.random.uniform(45000, 65000),
+            'Europe': np.random.uniform(35000, 55000),
+            'Asia Pacific': np.random.uniform(15000, 45000),
+            'Latin America': np.random.uniform(8000, 15000),
+            'Africa': np.random.uniform(2000, 8000),
+            'Middle East': np.random.uniform(20000, 40000)
+        }[region]
+        
+        for year in years:
+            # GDP growth with realistic trends
+            gdp_growth = np.random.normal(2.5, 1.5) if year < 2020 else np.random.normal(1.8, 2.2)
+            gdp_per_capita = base_gdp * (1 + gdp_growth/100) ** (year - 2019)
+            
+            economic_data.append({
+                'country': country,
+                'region': region,
+                'year': year,
+                'gdp_per_capita': round(gdp_per_capita, 2),
+                'gdp_growth_rate': round(gdp_growth, 2),
+                'inflation_rate': round(np.random.normal(3.2, 1.8), 2),
+                'unemployment_rate': round(np.random.uniform(3.5, 12.0), 1),
+                'trade_balance': round(np.random.normal(0, 50000), 0),
+                'fdi_inflow': round(np.random.exponential(5000), 0),
+                'export_volume': round(np.random.exponential(25000), 0),
+                'import_volume': round(np.random.exponential(30000), 0)
+            })
+    
+    # 2. SOCIAL DEVELOPMENT INDICATORS
+    social_data = []
+    for country in all_countries:
+        region = next(region for region, countries in regions_countries.items() if country in countries)
+        
+        # Base values vary by development level
+        base_literacy = {
+            'North America': np.random.uniform(95, 99),
+            'Europe': np.random.uniform(95, 99),
+            'Asia Pacific': np.random.uniform(85, 98),
+            'Latin America': np.random.uniform(80, 95),
+            'Africa': np.random.uniform(60, 85),
+            'Middle East': np.random.uniform(75, 95)
+        }[region]
+        
+        for year in years:
+            social_data.append({
+                'country': country,
+                'region': region,
+                'year': year,
+                'literacy_rate': round(min(99.9, base_literacy + (year-2019)*0.3), 1),
+                'life_expectancy': round(np.random.uniform(65, 85), 1),
+                'infant_mortality': round(np.random.uniform(2, 35), 1),
+                'internet_penetration': round(min(98, np.random.uniform(45, 95) + (year-2019)*2), 1),
+                'mobile_subscriptions': round(min(150, np.random.uniform(80, 130) + (year-2019)*1.5), 1),
+                'poverty_headcount': round(max(0.1, np.random.uniform(1, 25) - (year-2019)*0.5), 1),
+                'gini_coefficient': round(np.random.uniform(25, 65), 1),
+                'education_expenditure': round(np.random.uniform(3, 8), 1)
+            })
+    
+    # 3. BUSINESS ENVIRONMENT DATA
+    business_data = []
+    for country in all_countries:
+        region = next(region for region, countries in regions_countries.items() if country in countries)
+        
+        for year in years:
+            business_data.append({
+                'country': country,
+                'region': region,
+                'year': year,
+                'ease_of_business_rank': np.random.randint(1, 190),
+                'corruption_perception_index': round(np.random.uniform(20, 90), 1),
+                'regulatory_quality': round(np.random.uniform(-2, 2), 2),
+                'rule_of_law': round(np.random.uniform(-2, 2), 2),
+                'political_stability': round(np.random.uniform(-2, 2), 2),
+                'innovation_index': round(np.random.uniform(15, 65), 1),
+                'digital_competitiveness': round(np.random.uniform(20, 95), 1),
+                'infrastructure_quality': round(np.random.uniform(2, 6), 1)
+            })
+    
+    # 4. MARKET OPPORTUNITIES DATA
+    market_data = []
+    sectors = ['Technology', 'Healthcare', 'Finance', 'Manufacturing', 'Energy', 'Agriculture', 'Tourism', 'Education']
+    
+    for country in all_countries:
+        region = next(region for region, countries in regions_countries.items() if country in countries)
+        
+        for sector in sectors:
+            market_data.append({
+                'country': country,
+                'region': region,
+                'sector': sector,
+                'market_size_usd_bn': round(np.random.exponential(10), 1),
+                'growth_rate_5yr': round(np.random.normal(6.5, 3.2), 1),
+                'competition_level': random.choice(['Low', 'Medium', 'High']),
+                'entry_barriers': random.choice(['Low', 'Medium', 'High']),
+                'regulatory_complexity': random.choice(['Simple', 'Moderate', 'Complex']),
+                'market_maturity': random.choice(['Emerging', 'Growing', 'Mature']),
+                'investment_required_usd_m': round(np.random.exponential(50), 1),
+                'roi_potential': round(np.random.uniform(8, 25), 1)
+            })
+    
+    # 5. RISK ASSESSMENT DATA
+    risk_data = []
+    risk_types = ['Political', 'Economic', 'Social', 'Technological', 'Environmental', 'Legal']
+    
+    for country in all_countries:
+        region = next(region for region, countries in regions_countries.items() if country in countries)
+        
+        for risk_type in risk_types:
+            risk_data.append({
+                'country': country,
+                'region': region,
+                'risk_type': risk_type,
+                'risk_level': random.choice(['Very Low', 'Low', 'Medium', 'High', 'Very High']),
+                'risk_score': round(np.random.uniform(1, 10), 1),
+                'mitigation_cost': round(np.random.exponential(5), 1),
+                'impact_severity': random.choice(['Low', 'Medium', 'High', 'Critical']),
+                'probability': round(np.random.uniform(0.1, 0.9), 2)
+            })
+    
+    # 6. QUARTERLY PERFORMANCE DATA
+    quarterly_data = []
+    for country in random.sample(all_countries, 15):  # Sample for key markets
+        region = next(region for region, countries in regions_countries.items() if country in countries)
+        
+        for year in years:
+            for quarter in quarters:
+                quarterly_data.append({
+                    'country': country,
+                    'region': region,
+                    'year': year,
+                    'quarter': quarter,
+                    'gdp_growth_qoq': round(np.random.normal(0.6, 1.2), 2),
+                    'investment_inflow': round(np.random.exponential(1000), 0),
+                    'trade_volume': round(np.random.exponential(5000), 0),
+                    'business_confidence': round(np.random.uniform(30, 80), 1),
+                    'consumer_confidence': round(np.random.uniform(40, 90), 1),
+                    'policy_changes': np.random.randint(0, 5)
+                })
+    
+    # 7. STRATEGIC RECOMMENDATIONS DATA
+    recommendations = []
+    strategies = ['Market Entry', 'Expansion', 'Partnership', 'Investment', 'Exit', 'Monitor']
+    
+    for country in all_countries:
+        region = next(region for region, countries in regions_countries.items() if country in countries)
+        
+        recommendations.append({
+            'country': country,
+            'region': region,
+            'priority_level': random.choice(['High', 'Medium', 'Low']),
+            'recommended_strategy': random.choice(strategies),
+            'investment_timeline': random.choice(['0-6 months', '6-12 months', '1-2 years', '2+ years']),
+            'expected_roi': round(np.random.uniform(8, 30), 1),
+            'confidence_score': round(np.random.uniform(60, 95), 1),
+            'key_success_factors': random.sample([
+                'Regulatory Support', 'Market Demand', 'Infrastructure', 'Talent Pool', 
+                'Political Stability', 'Economic Growth', 'Technology Adoption'
+            ], 3)
+        })
+    
+    # Convert to DataFrames
+    economic_df = pd.DataFrame(economic_data)
+    social_df = pd.DataFrame(social_data)
+    business_df = pd.DataFrame(business_data)
+    market_df = pd.DataFrame(market_data)
+    risk_df = pd.DataFrame(risk_data)
+    quarterly_df = pd.DataFrame(quarterly_data)
+    recommendations_df = pd.DataFrame(recommendations)
+    
+    return {
+        'economic_indicators': economic_df,
+        'social_development': social_df,
+        'business_environment': business_df,
+        'market_opportunities': market_df,
+        'risk_assessment': risk_df,
+        'quarterly_performance': quarterly_df,
+        'strategic_recommendations': recommendations_df
+    }
+
+def save_data_to_files(datasets, format='csv'):
+    """Save all datasets to files"""
+    
+    for name, df in datasets.items():
+        if format == 'csv':
+            filename = f"global_development_{name}.csv"
+            df.to_csv(filename, index=False)
+            print(f"Saved {filename} with {len(df)} rows")
+        
+        elif format == 'json':
+            filename = f"global_development_{name}.json"
+            df.to_json(filename, orient='records', indent=2)
+            print(f"Saved {filename} with {len(df)} rows")
+
+def generate_summary_statistics(datasets):
+    """Generate summary statistics for dashboard overview"""
+    
+    summary = {}
+    
+    # Economic summary
+    econ_df = datasets['economic_indicators']
+    summary['total_countries'] = econ_df['country'].nunique()
+    summary['total_regions'] = econ_df['region'].nunique()
+    summary['avg_gdp_growth'] = round(econ_df['gdp_growth_rate'].mean(), 2)
+    summary['total_trade_volume'] = round(econ_df['export_volume'].sum() / 1000000, 1)  # in billions
+    
+    # Market opportunities
+    market_df = datasets['market_opportunities']
+    summary['total_market_size'] = round(market_df['market_size_usd_bn'].sum(), 1)
+    summary['high_growth_markets'] = len(market_df[market_df['growth_rate_5yr'] > 10])
+    
+    # Risk assessment
+    risk_df = datasets['risk_assessment']
+    high_risk_countries = risk_df[risk_df['risk_level'].isin(['High', 'Very High'])]['country'].nunique()
+    summary['high_risk_countries'] = high_risk_countries
+    
+    # Strategic recommendations
+    rec_df = datasets['strategic_recommendations']
+    summary['high_priority_markets'] = len(rec_df[rec_df['priority_level'] == 'High'])
+    summary['avg_expected_roi'] = round(rec_df['expected_roi'].mean(), 1)
+    
+    return summary
+
+def main():
+    """Main function to generate all data"""
+    
+    print("🌍 Generating Global Development Intelligence Dashboard Data...")
+    print("=" * 60)
+    
+    # Generate all datasets
+    datasets = generate_global_development_data()
+    
+    # Save to CSV files
+    print("\n📊 Saving datasets to CSV files...")
+    save_data_to_files(datasets, format='csv')
+    
+    # Generate summary statistics
+    print("\n📈 Generating summary statistics...")
+    summary = generate_summary_statistics(datasets)
+    
+    print("\n🎯 DASHBOARD SUMMARY STATISTICS:")
+    print("=" * 40)
+    for key, value in summary.items():
+        print(f"{key.replace('_', ' ').title()}: {value}")
+    
+    # Sample data preview
+    print("\n🔍 SAMPLE DATA PREVIEW:")
+    print("=" * 40)
+    
+    print("\n📊 Economic Indicators (Top 5 rows):")
+    print(datasets['economic_indicators'].head())
+    
+    print("\n🏢 Market Opportunities (High Growth):")
+    high_growth = datasets['market_opportunities'][
+        datasets['market_opportunities']['growth_rate_5yr'] > 15
+    ].head()
+    print(high_growth[['country', 'sector', 'market_size_usd_bn', 'growth_rate_5yr']])
+    
+    print("\n⚠️ Risk Assessment (High Risk):")
+    high_risk = datasets['risk_assessment'][
+        datasets['risk_assessment']['risk_level'] == 'Very High'
+    ].head()
+    print(high_risk[['country', 'risk_type', 'risk_score', 'impact_severity']])
+    
+    print("\n🎯 Strategic Recommendations (High Priority):")
+    high_priority = datasets['strategic_recommendations'][
+        datasets['strategic_recommendations']['priority_level'] == 'High'
+    ].head()
+    print(high_priority[['country', 'recommended_strategy', 'expected_roi', 'confidence_score']])
+    
+    print("\n✅ Data generation complete! Files saved to current directory.")
+    print("📋 Use this data to demonstrate:")
+    print("   • Data analysis and visualization skills")
+    print("   • Strategic thinking and market intelligence")
+    print("   • Risk assessment capabilities")
+    print("   • Business growth strategy formulation")
+
+if __name__ == "__main__":
+    main()
