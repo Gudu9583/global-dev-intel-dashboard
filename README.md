@@ -84,12 +84,6 @@ As a Senior Data Analyst, I directed the entire analytics lifecycle, partnering 
 
 ---
 
-## 🏁 Quickstart
-
-> This repository is a **public template**. Sensitive data and credentials are not included.  
-> Example datasets and generic code are provided for demonstration only.
-
-
 ## 📜 License
 
 Distributed under the MIT License. See [LICENSE](LICENSE) for details.
