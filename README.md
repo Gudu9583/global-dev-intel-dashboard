@@ -15,7 +15,7 @@ The **Global Development Intelligence Dashboard** is an advanced analytics platf
 
 ---
 
-## 👩‍💻 My Role: Senior Data Analyst (3+ years)
+## 👩‍💻 My Role: Data Analyst (3+ years)
 
 As a Senior Data Analyst, I directed the entire analytics lifecycle, partnering with policy experts, data engineers, and executive stakeholders to deliver measurable impact:
 
