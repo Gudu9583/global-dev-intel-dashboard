@@ -1,0 +1,428 @@
+-- =============================================
+-- Global Development Intelligence Dashboard
+-- SQL Server Data Analysis Project
+-- Author: Data Analyst with 3 Years Experience
+-- Purpose: Comprehensive economic development analysis
+-- =============================================
+
+-- Database Creation and Setup
+CREATE DATABASE GlobalDevelopmentIntelligence;
+USE GlobalDevelopmentIntelligence;
+
+-- =============================================
+-- TABLE CREATION & DATA SETUP
+-- =============================================
+
+-- Countries Master Table
+CREATE TABLE Countries (
+    CountryID INT PRIMARY KEY IDENTITY(1,1),
+    CountryName NVARCHAR(100) NOT NULL,
+    Region NVARCHAR(50) NOT NULL,
+    SubRegion NVARCHAR(50),
+    Population BIGINT,
+    Area_SqKm DECIMAL(15,2),
+    CreatedDate DATETIME2 DEFAULT GETDATE()
+);
+
+-- Economic Indicators Table
+CREATE TABLE EconomicIndicators (
+    IndicatorID INT PRIMARY KEY IDENTITY(1,1),
+    CountryID INT FOREIGN KEY REFERENCES Countries(CountryID),
+    Year INT NOT NULL,
+    GDP_USD_Billions DECIMAL(15,2),
+    GDP_Growth_Rate DECIMAL(5,2),
+    GDP_Per_Capita DECIMAL(12,2),
+    Inflation_Rate DECIMAL(5,2),
+    Unemployment_Rate DECIMAL(5,2),
+    Trade_Balance_Billions DECIMAL(15,2)
+);
+
+-- Investment Flows Table
+CREATE TABLE InvestmentFlows (
+    FlowID INT PRIMARY KEY IDENTITY(1,1),
+    CountryID INT FOREIGN KEY REFERENCES Countries(CountryID),
+    Year INT NOT NULL,
+    Quarter INT NOT NULL,
+    FDI_Inflow_Millions DECIMAL(15,2),
+    Portfolio_Investment_Millions DECIMAL(15,2),
+    Debt_Investment_Millions DECIMAL(15,2),
+    Total_Investment_Millions AS (FDI_Inflow_Millions + Portfolio_Investment_Millions + Debt_Investment_Millions)
+);
+
+-- Digital Development Index Table
+CREATE TABLE DigitalDevelopment (
+    DigitalID INT PRIMARY KEY IDENTITY(1,1),
+    CountryID INT FOREIGN KEY REFERENCES Countries(CountryID),
+    Year INT NOT NULL,
+    Digital_Adoption_Score DECIMAL(5,2),
+    Internet_Penetration DECIMAL(5,2),
+    Mobile_Subscriptions_Per_100 DECIMAL(6,2),
+    Broadband_Subscriptions_Per_100 DECIMAL(5,2),
+    Digital_Skills_Index DECIMAL(5,2)
+);
+
+-- Trade Performance Table
+CREATE TABLE TradePerformance (
+    TradeID INT PRIMARY KEY IDENTITY(1,1),
+    CountryID INT FOREIGN KEY REFERENCES Countries(CountryID),
+    Year INT NOT NULL,
+    Exports_Billions DECIMAL(15,2),
+    Imports_Billions DECIMAL(15,2),
+    Trade_Balance_Billions AS (Exports_Billions - Imports_Billions),
+    Export_Complexity_Index DECIMAL(5,2),
+    Main_Export_Category NVARCHAR(100)
+);
+
+-- =============================================
+-- SAMPLE DATA INSERTION
+-- =============================================
+
+-- Insert Countries
+INSERT INTO Countries (CountryName, Region, SubRegion, Population, Area_SqKm) VALUES
+('United States', 'North America', 'Northern America', 331900000, 9833517.00),
+('China', 'Asia', 'Eastern Asia', 1412000000, 9596961.00),
+('Germany', 'Europe', 'Western Europe', 83200000, 357114.00),
+('Japan', 'Asia', 'Eastern Asia', 125800000, 377975.00),
+('United Kingdom', 'Europe', 'Northern Europe', 67500000, 242495.00),
+('India', 'Asia', 'Southern Asia', 1380000000, 3287263.00),
+('France', 'Europe', 'Western Europe', 67750000, 643801.00),
+('Brazil', 'South America', 'South America', 213500000, 8514877.00),
+('Canada', 'North America', 'Northern America', 38000000, 9984670.00),
+('South Korea', 'Asia', 'Eastern Asia', 51780000, 100210.00),
+('Singapore', 'Asia', 'South-Eastern Asia', 5896000, 719.00),
+('Switzerland', 'Europe', 'Western Europe', 8703000, 41285.00),
+('Nigeria', 'Africa', 'Western Africa', 218500000, 923768.00),
+('Kenya', 'Africa', 'Eastern Africa', 54000000, 580367.00),
+('Mexico', 'North America', 'Central America', 128900000, 1964375.00);
+
+-- Insert Economic Indicators (2019-2024)
+INSERT INTO EconomicIndicators (CountryID, Year, GDP_USD_Billions, GDP_Growth_Rate, GDP_Per_Capita, Inflation_Rate, Unemployment_Rate, Trade_Balance_Billions) VALUES
+-- United States
+(1, 2019, 21433.23, 2.16, 65280, 1.81, 3.67, -854.23),
+(1, 2020, 20953.03, -3.49, 63544, 1.23, 8.05, -678.89),
+(1, 2021, 23315.08, 5.95, 70249, 4.70, 5.35, -859.67),
+(1, 2022, 25462.70, 2.06, 76399, 8.00, 3.65, -943.21),
+(1, 2023, 26854.60, 2.52, 80035, 4.12, 3.72, -773.44),
+(1, 2024, 27654.30, 2.81, 82156, 3.18, 3.89, -821.56),
+
+-- China
+(2, 2019, 14342.90, 5.95, 10143, 2.90, 5.20, 421.93),
+(2, 2020, 14722.73, 2.24, 10408, 2.42, 5.60, 535.02),
+(2, 2021, 17734.06, 8.45, 12551, 0.98, 5.10, 676.43),
+(2, 2022, 17963.17, 2.99, 12720, 1.97, 5.50, 877.54),
+(2, 2023, 18321.20, 5.23, 12970, 0.23, 5.20, 823.21),
+(2, 2024, 19245.67, 5.10, 13621, 0.89, 5.10, 891.32),
+
+-- Germany
+(3, 2019, 3861.12, 1.06, 46422, 1.45, 3.17, 298.67),
+(3, 2020, 3846.41, -3.69, 46217, 0.37, 3.81, 261.23),
+(3, 2021, 4259.93, 3.20, 51203, 3.14, 3.57, 298.89),
+(3, 2022, 4259.93, 1.79, 51203, 6.87, 3.05, 79.44),
+(3, 2023, 4456.08, -0.11, 53571, 5.95, 3.01, 269.87),
+(3, 2024, 4521.67, 1.12, 54351, 2.31, 2.98, 287.65);
+
+-- Insert Investment Flows Data
+INSERT INTO InvestmentFlows (CountryID, Year, Quarter, FDI_Inflow_Millions, Portfolio_Investment_Millions, Debt_Investment_Millions) VALUES
+-- Sample data for major economies
+(1, 2023, 1, 45234.56, 23789.45, 31456.78),
+(1, 2023, 2, 52187.34, 28345.67, 35723.89),
+(1, 2023, 3, 48967.23, 25634.12, 29876.54),
+(1, 2023, 4, 58734.67, 32145.78, 38923.45),
+(1, 2024, 1, 61345.89, 29456.34, 35234.67),
+(1, 2024, 2, 67823.45, 34789.23, 42134.56),
+
+(2, 2023, 1, 34567.89, 18923.45, 24567.34),
+(2, 2023, 2, 41234.56, 22345.67, 28967.89),
+(2, 2023, 3, 38756.23, 20123.45, 26234.67),
+(2, 2023, 4, 45123.78, 25678.23, 31456.89),
+(2, 2024, 1, 47234.56, 23456.78, 29678.45),
+(2, 2024, 2, 52345.67, 27234.56, 34567.89);
+
+-- Insert Digital Development Data
+INSERT INTO DigitalDevelopment (CountryID, Year, Digital_Adoption_Score, Internet_Penetration, Mobile_Subscriptions_Per_100, Broadband_Subscriptions_Per_100, Digital_Skills_Index) VALUES
+(11, 2023, 92.5, 89.4, 148.7, 28.3, 85.6), -- Singapore
+(3, 2023, 89.2, 91.8, 132.4, 42.1, 82.3),   -- Germany
+(10, 2023, 88.7, 96.2, 128.9, 44.8, 84.1),  -- South Korea
+(12, 2023, 85.4, 96.4, 125.3, 47.2, 79.8),  -- Switzerland
+(1, 2023, 84.9, 92.0, 120.6, 36.7, 78.9),   -- United States
+(5, 2023, 83.7, 96.7, 119.2, 39.8, 77.4),   -- United Kingdom
+(2, 2023, 73.2, 73.0, 124.8, 28.9, 68.7),   -- China
+(6, 2023, 45.3, 50.0, 84.8, 1.4, 42.1),     -- India
+(13, 2023, 38.9, 51.2, 104.7, 0.4, 31.2),   -- Nigeria
+(14, 2023, 29.8, 43.4, 118.2, 0.2, 28.9);   -- Kenya
+
+-- =============================================
+-- ADVANCED ANALYTICAL QUERIES
+-- =============================================
+
+-- 1. GDP Growth Analysis with Regional Comparison
+CREATE VIEW vw_RegionalGDPAnalysis AS
+SELECT 
+    c.Region,
+    e.Year,
+    COUNT(DISTINCT c.CountryID) as CountryCount,
+    ROUND(AVG(e.GDP_Growth_Rate), 2) as Avg_GDP_Growth,
+    ROUND(MIN(e.GDP_Growth_Rate), 2) as Min_GDP_Growth,
+    ROUND(MAX(e.GDP_Growth_Rate), 2) as Max_GDP_Growth,
+    ROUND(STDEV(e.GDP_Growth_Rate), 2) as StdDev_GDP_Growth,
+    SUM(e.GDP_USD_Billions) as Total_Regional_GDP
+FROM Countries c
+JOIN EconomicIndicators e ON c.CountryID = e.CountryID
+GROUP BY c.Region, e.Year;
+
+-- Query the view
+SELECT * FROM vw_RegionalGDPAnalysis 
+ORDER BY Year DESC, Total_Regional_GDP DESC;
+
+-- 2. Investment Flow Trends Analysis with Moving Averages
+WITH InvestmentTrends AS (
+    SELECT 
+        c.CountryName,
+        c.Region,
+        i.Year,
+        i.Quarter,
+        i.Total_Investment_Millions,
+        AVG(i.Total_Investment_Millions) OVER (
+            PARTITION BY c.CountryID 
+            ORDER BY i.Year, i.Quarter 
+            ROWS BETWEEN 3 PRECEDING AND CURRENT ROW
+        ) as Moving_Avg_4Q,
+        LAG(i.Total_Investment_Millions, 4) OVER (
+            PARTITION BY c.CountryID 
+            ORDER BY i.Year, i.Quarter
+        ) as YoY_Previous,
+        CASE 
+            WHEN LAG(i.Total_Investment_Millions, 4) OVER (
+                PARTITION BY c.CountryID 
+                ORDER BY i.Year, i.Quarter
+            ) IS NOT NULL 
+            THEN ROUND(
+                ((i.Total_Investment_Millions - LAG(i.Total_Investment_Millions, 4) OVER (
+                    PARTITION BY c.CountryID 
+                    ORDER BY i.Year, i.Quarter
+                )) * 100.0 / LAG(i.Total_Investment_Millions, 4) OVER (
+                    PARTITION BY c.CountryID 
+                    ORDER BY i.Year, i.Quarter
+                )), 2)
+            ELSE NULL
+        END as YoY_Growth_Rate
+    FROM Countries c
+    JOIN InvestmentFlows i ON c.CountryID = i.CountryID
+)
+SELECT 
+    CountryName,Region,Year,Quarter,
+    FORMAT(Total_Investment_Millions, 'N0') as Total_Investment_M,
+    FORMAT(Moving_Avg_4Q, 'N0') as Moving_Avg_4Q,
+    YoY_Growth_Rate
+FROM InvestmentTrends
+WHERE Year >= 2023
+ORDER BY CountryName, Year, Quarter;
+
+-- 3. Digital Development vs Economic Performance Correlation
+SELECT 
+    c.CountryName,
+    c.Region,
+    d.Digital_Adoption_Score,
+    e.GDP_Per_Capita,
+    e.GDP_Growth_Rate,
+    d.Internet_Penetration,
+    -- Correlation categorization
+    CASE 
+        WHEN d.Digital_Adoption_Score >= 80 AND e.GDP_Per_Capita >= 50000 THEN 'High Digital-High Income'
+        WHEN d.Digital_Adoption_Score >= 80 AND e.GDP_Per_Capita < 50000 THEN 'High Digital-Mid Income'
+        WHEN d.Digital_Adoption_Score < 80 AND e.GDP_Per_Capita >= 50000 THEN 'Mid Digital-High Income'
+        ELSE 'Developing Digital Economy'
+    END as Development_Category,
+    -- Digital readiness score
+    ROUND((d.Digital_Adoption_Score + d.Internet_Penetration + d.Digital_Skills_Index) / 3, 2) as Digital_Readiness_Index
+FROM Countries c
+JOIN DigitalDevelopment d ON c.CountryID = d.CountryID
+JOIN EconomicIndicators e ON c.CountryID = e.CountryID AND e.Year = d.Year
+WHERE d.Year = 2023
+ORDER BY Digital_Readiness_Index DESC;
+
+-- 4. Economic Resilience Analysis (COVID-19 Recovery)
+WITH RecoveryAnalysis AS (
+    SELECT 
+        c.CountryName,
+        c.Region,
+        e2019.GDP_Growth_Rate as Pre_COVID_Growth,
+        e2020.GDP_Growth_Rate as COVID_Impact,
+        e2021.GDP_Growth_Rate as Recovery_2021,
+        e2023.GDP_Growth_Rate as Current_Growth,
+        -- Recovery metrics
+        ROUND(e2021.GDP_USD_Billions / e2019.GDP_USD_Billions * 100 - 100, 2) as GDP_Recovery_Rate,
+        ROUND(ABS(e2020.GDP_Growth_Rate), 2) as COVID_Decline_Magnitude,
+        CASE 
+            WHEN e2021.GDP_USD_Billions > e2019.GDP_USD_Billions THEN 'Full Recovery'
+            WHEN e2021.GDP_USD_Billions > e2020.GDP_USD_Billions THEN 'Partial Recovery'
+            ELSE 'Continued Decline'
+        END as Recovery_Status
+    FROM Countries c
+    JOIN EconomicIndicators e2019 ON c.CountryID = e2019.CountryID AND e2019.Year = 2019
+    JOIN EconomicIndicators e2020 ON c.CountryID = e2020.CountryID AND e2020.Year = 2020
+    JOIN EconomicIndicators e2021 ON c.CountryID = e2021.CountryID AND e2021.Year = 2021
+    JOIN EconomicIndicators e2023 ON c.CountryID = e2023.CountryID AND e2023.Year = 2023
+)
+SELECT 
+    CountryName,Region,Recovery_Status,
+    Pre_COVID_Growth,COVID_Impact,Recovery_2021,Current_Growth,
+    GDP_Recovery_Rate,COVID_Decline_Magnitude,
+    -- Resilience Score (lower is better for decline, higher is better for recovery)
+    ROUND(Recovery_2021 - COVID_Impact + GDP_Recovery_Rate/10, 2) as Resilience_Score
+FROM RecoveryAnalysis
+ORDER BY Resilience_Score DESC;
+
+-- 5. Investment Composition Analysis
+SELECT 
+    c.CountryName,
+    c.Region,
+    i.Year,
+    SUM(i.FDI_Inflow_Millions) as Total_FDI,
+    SUM(i.Portfolio_Investment_Millions) as Total_Portfolio,
+    SUM(i.Debt_Investment_Millions) as Total_Debt,
+    SUM(i.Total_Investment_Millions) as Grand_Total,
+    -- Investment composition percentages
+    ROUND(SUM(i.FDI_Inflow_Millions) * 100.0 / SUM(i.Total_Investment_Millions), 1) as FDI_Percentage,
+    ROUND(SUM(i.Portfolio_Investment_Millions) * 100.0 / SUM(i.Total_Investment_Millions), 1) as Portfolio_Percentage,
+    ROUND(SUM(i.Debt_Investment_Millions) * 100.0 / SUM(i.Total_Investment_Millions), 1) as Debt_Percentage,
+    -- Investment stability indicator
+    CASE 
+        WHEN SUM(i.FDI_Inflow_Millions) * 100.0 / SUM(i.Total_Investment_Millions) >= 60 THEN 'FDI Dominant (Stable)'
+        WHEN SUM(i.Portfolio_Investment_Millions) * 100.0 / SUM(i.Total_Investment_Millions) >= 50 THEN 'Portfolio Heavy (Volatile)'
+        ELSE 'Balanced Mix'
+    END as Investment_Profile
+FROM Countries c
+JOIN InvestmentFlows i ON c.CountryID = i.CountryID
+GROUP BY c.CountryName, c.Region, i.Year
+HAVING SUM(i.Total_Investment_Millions) > 0
+ORDER BY i.Year DESC, Grand_Total DESC;
+
+-- =============================================
+-- KEY PERFORMANCE INDICATORS (KPIs)
+-- =============================================
+
+-- Executive Dashboard KPIs
+SELECT 
+    'Global Economic Health' as KPI_Category,
+    CONCAT(
+        FORMAT(AVG(GDP_Growth_Rate), 'N2'), '%'
+    ) as Current_Avg_Growth,
+    COUNT(DISTINCT CASE WHEN GDP_Growth_Rate > 3 THEN CountryID END) as High_Growth_Countries,
+    COUNT(DISTINCT CASE WHEN GDP_Growth_Rate < 0 THEN CountryID END) as Recession_Countries,
+    FORMAT(SUM(GDP_USD_Billions), 'N0') as Total_Global_GDP_Billions
+FROM EconomicIndicators 
+WHERE Year = 2024
+
+UNION ALL
+
+SELECT 
+    'Investment Flows',
+    FORMAT(AVG(Total_Investment_Millions), 'N0') as Avg_Investment_M,
+    NULL,NULL,
+    FORMAT(SUM(Total_Investment_Millions), 'N0') as Total_Investment_M
+FROM InvestmentFlows 
+WHERE Year = 2024
+
+UNION ALL
+
+SELECT 
+    'Digital Development',
+    CONCAT(FORMAT(AVG(Digital_Adoption_Score), 'N1'), '/100') as Avg_Digital_Score,
+    COUNT(CASE WHEN Digital_Adoption_Score >= 80 THEN 1 END) as High_Digital_Countries,
+    COUNT(CASE WHEN Digital_Adoption_Score < 50 THEN 1 END) as Low_Digital_Countries,
+    CONCAT(FORMAT(AVG(Internet_Penetration), 'N1'), '%') as Avg_Internet_Penetration
+FROM DigitalDevelopment 
+WHERE Year = 2023;
+
+-- =============================================
+-- PERFORMANCE OPTIMIZATION INDEXES
+-- =============================================
+
+-- Optimize query performance
+CREATE NONCLUSTERED INDEX IX_EconomicIndicators_Year_Country 
+ON EconomicIndicators (Year, CountryID) 
+INCLUDE (GDP_Growth_Rate, GDP_USD_Billions, GDP_Per_Capita);
+
+CREATE NONCLUSTERED INDEX IX_InvestmentFlows_Year_Quarter 
+ON InvestmentFlows (Year, Quarter, CountryID) 
+INCLUDE (Total_Investment_Millions);
+
+CREATE NONCLUSTERED INDEX IX_Countries_Region 
+ON Countries (Region) 
+INCLUDE (CountryName, Population);
+
+-- =============================================
+-- DATA QUALITY CHECKS
+-- =============================================
+
+-- Data Quality Report
+SELECT 
+    'Economic Indicators' as TableName,
+    COUNT(*) as TotalRecords,
+    COUNT(CASE WHEN GDP_USD_Billions IS NULL THEN 1 END) as Missing_GDP,
+    COUNT(CASE WHEN GDP_Growth_Rate IS NULL THEN 1 END) as Missing_GrowthRate,
+    MIN(Year) as EarliestYear,
+    MAX(Year) as LatestYear
+FROM EconomicIndicators
+
+UNION ALL
+
+SELECT 
+    'Investment Flows',
+    COUNT(*),
+    COUNT(CASE WHEN FDI_Inflow_Millions IS NULL THEN 1 END),
+    COUNT(CASE WHEN Portfolio_Investment_Millions IS NULL THEN 1 END),
+    MIN(Year),
+    MAX(Year)
+FROM InvestmentFlows
+
+UNION ALL
+
+SELECT 
+    'Digital Development',
+    COUNT(*),
+    COUNT(CASE WHEN Digital_Adoption_Score IS NULL THEN 1 END),
+    COUNT(CASE WHEN Internet_Penetration IS NULL THEN 1 END),
+    MIN(Year),
+    MAX(Year)
+FROM DigitalDevelopment;
+
+-- =============================================
+-- EXPORT VIEWS FOR VISUALIZATION TOOLS
+-- =============================================
+
+-- Summary view for charts and dashboards
+CREATE VIEW vw_DashboardSummary AS
+SELECT 
+    c.CountryName,
+    c.Region,
+    e.Year,
+    e.GDP_USD_Billions,
+    e.GDP_Growth_Rate,
+    e.GDP_Per_Capita,
+    e.Unemployment_Rate,
+    ISNULL(d.Digital_Adoption_Score, 0) as Digital_Score,
+    ISNULL(i.Total_Investment_Annual, 0) as Annual_Investment
+FROM Countries c
+LEFT JOIN EconomicIndicators e ON c.CountryID = e.CountryID
+LEFT JOIN DigitalDevelopment d ON c.CountryID = d.CountryID AND d.Year = e.Year
+LEFT JOIN (
+    SELECT 
+        CountryID, 
+        Year, 
+        SUM(Total_Investment_Millions) as Total_Investment_Annual
+    FROM InvestmentFlows 
+    GROUP BY CountryID, Year
+) i ON c.CountryID = i.CountryID AND i.Year = e.Year
+WHERE e.Year IS NOT NULL;
+
+-- Final comprehensive report
+SELECT 
+    'Analysis Complete - Ready for GitHub Portfolio' as Status,
+    COUNT(DISTINCT c.CountryID) as Countries_Analyzed,
+    COUNT(DISTINCT e.Year) as Years_Covered,
+    COUNT(*) as Total_Data_Points,
+    'Professional SQL Analysis Showcasing 3+ Years Experience' as Summary
+FROM Countries c
+JOIN EconomicIndicators e ON c.CountryID = e.CountryID;
