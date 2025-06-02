@@ -1,0 +1,35 @@
+# Core Data Analysis
+pandas
+numpy
+
+# Data Visualization
+matplotlib
+seaborn
+plotly
+powerbiclient     # For Power BI integration in Python
+tableauserverclient  # For Tableau integration in Python
+
+# Dashboarding
+dash
+streamlit
+
+# Data Processing (Excel/CSV)
+openpyxl
+xlrd
+
+# Database Connection
+sqlalchemy
+
+# Statistics
+statsmodels
+
+# Jupyter Notebook Support
+jupyter
+ipykernel
+
+# Code Quality & Testing
+pytest
+black
+
+# Optional: Web/API access
+requests
